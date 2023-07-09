@@ -1,5 +1,5 @@
 ---
-title: Welcome to my blog
+title: Technical Notes and Snippets
 ---
 
-This is some content. My dudes.
+This is a place where I store bits and pieces of my technical knowledge.
