@@ -21,7 +21,7 @@ It should be noted that this is a barebones solution. Consider using Gitea, GitL
 
 4. Create an active directory security group with all the allowed users/groups. eg. ```GIT_USERS```.
 
-4. For the permissions on ```C:\git_repos```, ensure that 
+5. For the permissions on ```C:\git_repos```, ensure that 
 
  - The ```git-service``` account has read and write permissions. 
  
@@ -68,33 +68,33 @@ At this point, there should be a directory ```c:\git_repos``` and a user account
 
 2. After creating the application pool, open up (as administrator) C:\Windows\System32\inetsrv\Config\applicationHost.config . Look for the application pool created in the previous step and edit it to set two environment variables that Git will need.
 
-E.g. if your application pool is named ```git``` and the directory you created in Step 2 is ```C:\git_repos```, then you would have something like this (under configuration > system.applicationHosts > applicationPools):
+    eg. if your application pool is named ```git``` and the directory you created in Step 2 is ```C:\git_repos```, then you would have something like this (under configuration > system.applicationHosts > applicationPools):
 
 
-```
-<add name="git" autoStart="true" managedRuntimeVersion="v4.0">
-    <!-- Other config for the app pool -->
+    ```
+    <add name="git" autoStart="true" managedRuntimeVersion="v4.0">
+        <!-- Other config for the app pool -->
 
-    <environmentVariables>
-        <add name="GIT_PROJECT_ROOT" value="C:\git_repos" />
-        <add name="GIT_HTTP_EXPORT_ALL" value="1" />
-    </environmentVariables>
-</add>
-```
+        <environmentVariables>
+            <add name="GIT_PROJECT_ROOT" value="C:\git_repos" />
+            <add name="GIT_HTTP_EXPORT_ALL" value="1" />
+        </environmentVariables>
+    </add>
+    ```
 
 3. Within Server Manager, ensure that Windows Authentication and CGI are both enabled under Server Roles. 
 
-Windows Authentication is found via
+    Windows Authentication is found via
 
-```
-Web Server (IIS) > Web Server > Security > Windows Authentication
-```
+    ```
+    Web Server (IIS) > Web Server > Security > Windows Authentication
+    ```
 
-CGI is found via 
+    CGI is found via 
 
-```
-Web Server (IIS) > Web Server > Application Development > CGI
-```
+    ```
+    Web Server (IIS) > Web Server > Application Development > CGI
+    ```
 
 4. In IIS Manager, go to the git web site and add a new Script Map under Handler Mappings in the website configuration. Use the following values:
 
