@@ -13,25 +13,25 @@ It should be noted that this is a barebones solution. Consider using Gitea, GitL
 
 ## Setting up git on the web server and creating a service account
 
-1. Find the target web server with IIS installed. The server will be called ```GIT_SERVER```.
+- Find the target web server with IIS installed. The server will be called ```GIT_SERVER```.
 
-2. Install Git on the server. Once git is installed, decide on a directory on the web server to host your git repositories, eg. ```c:\git_repos```
+- Install Git on the server. Once git is installed, decide on a directory on the web server to host your git repositories, eg. ```c:\git_repos```
 
-3. Create a user. This can be a domain user, service account, or local Windows account. This will be attached to your application pool that will be used to run the git server. We will use a service account named ```git-service```.
+- Create a user. This can be a domain user, service account, or local Windows account. This will be attached to your application pool that will be used to run the git server. We will use a service account named ```git-service```.
 
-4. Create an active directory security group with all the allowed users/groups. eg. ```GIT_USERS```.
+- Create an active directory security group with all the allowed users/groups. eg. ```GIT_USERS```.
 
-4. For the permissions on ```C:\git_repos```, ensure that 
+    For the permissions on ```C:\git_repos```, ensure that 
 
- - The ```git-service``` account has read and write permissions. 
- 
- - ```GIT_SERVER\USERS``` are **removed** from the permissions. This is needed otherwise, ANYONE authenticated by the web server will be able to clone and push changes.
+    - The ```git-service``` account has read and write permissions. 
+    
+    - ```GIT_SERVER\USERS``` are **removed** from the permissions. This is needed otherwise, ANYONE authenticated by the web server will be able to clone and push changes.
 
- - The ```GIT_USERS``` security group (and any other groups) are given read/write permissions.
+    - The ```GIT_USERS``` security group (and any other groups) are given read/write permissions.
 
     Theoretically, you should be able to control git repository permissions on an individual basis using active directory security groups.
 
-6. Ensure that the ```git-service``` account is given the two following local security permissions:
+- Ensure that the ```git-service``` account is given the two following local security permissions:
 
 	- Replace a process level token
 
@@ -64,39 +64,39 @@ To create a bare repository, one can either initialize an empty directory:
 
 At this point, there should be a directory ```c:\git_repos``` and a user account ```git-service``` created. The directory should have at least one bare repository eg. ```test.git```. The next steps are to configure the web server.
 
-1. Create a new website<sup>1</sup> in IIS Manager running in its own application pool. The application pool used in this example will be named "git" and the identity will be the user account created in the previous steps, "git-service".
+- Create a new website<sup>1</sup> in IIS Manager running in its own application pool. The application pool used in this example will be named "git" and the identity will be the user account created in the previous steps, ```git-service```.
 
-2. After creating the application pool, open up (as administrator) C:\Windows\System32\inetsrv\Config\applicationHost.config . Look for the application pool created in the previous step and edit it to set two environment variables that Git will need.
+- After creating the application pool, open up (as administrator) C:\Windows\System32\inetsrv\Config\applicationHost.config . Look for the application pool created in the previous step and edit it to set two environment variables that Git will need.
 
-E.g. if your application pool is named ```git``` and the directory you created in Step 2 is ```C:\git_repos```, then you would have something like this (under configuration > system.applicationHosts > applicationPools):
+    eg. if your application pool is named ```git``` and the directory you created in Step 2 is ```C:\git_repos```, then you would have something like this (under configuration > system.applicationHosts > applicationPools):
 
 
-```
-<add name="git" autoStart="true" managedRuntimeVersion="v4.0">
-    <!-- Other config for the app pool -->
+    ```
+    <add name="git" autoStart="true" managedRuntimeVersion="v4.0">
+        <!-- Other config for the app pool -->
 
-    <environmentVariables>
-        <add name="GIT_PROJECT_ROOT" value="C:\git_repos" />
-        <add name="GIT_HTTP_EXPORT_ALL" value="1" />
-    </environmentVariables>
-</add>
-```
+        <environmentVariables>
+            <add name="GIT_PROJECT_ROOT" value="C:\git_repos" />
+            <add name="GIT_HTTP_EXPORT_ALL" value="1" />
+        </environmentVariables>
+    </add>
+    ```
 
-3. Within Server Manager, ensure that Windows Authentication and CGI are both enabled under Server Roles. 
+- Within Server Manager, ensure that Windows Authentication and CGI are both enabled under Server Roles. 
 
-Windows Authentication is found via
+    Windows Authentication is found via
 
-```
-Web Server (IIS) > Web Server > Security > Windows Authentication
-```
+    ```
+    Web Server (IIS) > Web Server > Security > Windows Authentication
+    ```
 
-CGI is found via 
+    CGI is found via 
 
-```
-Web Server (IIS) > Web Server > Application Development > CGI
-```
+    ```
+    Web Server (IIS) > Web Server > Application Development > CGI
+    ```
 
-4. In IIS Manager, go to the git web site and add a new Script Map under Handler Mappings in the website configuration. Use the following values:
+- In IIS Manager, go to the git web site and add a new Script Map under Handler Mappings in the website configuration. Use the following values:
 
     | Field | Value | Description |
     | ----------- | ----------- | ----------- |
@@ -106,9 +106,7 @@ Web Server (IIS) > Web Server > Application Development > CGI
 
     While creating the handler, click on "Request Restrictions" and uncheck the box for "Invoke handler only if request is mapped to:" under the "Mapping" tab. In the "Verb" tab, ensure that the handler is invoked for all verbs. In the "Access" tab, ensure that it is set to "Script".
 
-5. In IIS Manager, go to Authentication settings for the git web site. Enable Windows Authentication.
-
-
+- In IIS Manager, go to Authentication settings for the git web site. Enable Windows Authentication.
 
 ## Configuring Git Client on Development Machine
 
