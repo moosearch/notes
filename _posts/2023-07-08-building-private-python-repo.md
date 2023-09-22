@@ -60,7 +60,7 @@ IIS allows anonymous authentication and windows authentication.
 
 If using anonymous authentication, ensure that the Application Identity (Default Running User Context) has access to the package directory, ie. *c:\Repo*. You will have to configure file permissions/ACLs. There is also the choice of using a specific user too as the running context, which then you will have to configure the ACLs for the specific user.
 
-If using windows authentication, it is assumed that the remote user will be in an active directory domain. The identity of the person visiting the package repository through the endpoint */Repository* will be used in windows authentication. It is imperative that their ACLs/file permissions are configured properly if using this method of authentication or else they will receive a 403 error.
+<sup>2</sup>If using windows authentication, it is assumed that the remote user will be in an active directory domain. The identity of the person visiting the package repository through the endpoint */Repository* will be used in windows authentication. It is imperative that their ACLs/file permissions are configured properly if using this method of authentication or else they will receive a 403 error. 
 
 Once this is all set up, the user can install packages from the repository with some modified *pip* commands to make this work.
 
@@ -96,7 +96,7 @@ The contents of the pip.ini file is as follows:
 
 ```
 [global]
-trusted-host="esqbi.forces.mil.ca esqbi server1.forces.mil.ca"
+trusted-host="server1.contoso.com server1 alias.contoso.com alias"
 ```
 
 You can add more hosts as needed, as long as you separate them by spaces within the double quotes. 
@@ -108,3 +108,5 @@ At the end of this, the IIS web server should now be hosting a package repositor
 
 
 <sup>1</sup>Ideally, one should use a network share to host the files for the package repository as opposed to a local directory. For this example, I am using a local directory which will be configured with the appropriate permissions.
+
+<sup>2</sup>I was not able to have any luck using Windows authentication for the python package repository. Use anonymous authentication or consider a third party hosting solution.
